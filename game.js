@@ -4,6 +4,7 @@
 
     const MAX_PLAYERS = 6;
     const STORAGE_KEY = 'pokerTrackerGame';
+    const GAMES_LIST_KEY = 'pokerTrackerGamesList';
 
     // Game State
     const GameState = {
@@ -32,6 +33,22 @@
     function init() {
         setupEventListeners();
         updateRecommendedBlinds();
+
+        // Check for saved games and show load button if any exist
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        const gamesList = getSavedGamesList();
+        if (savedData || gamesList.length > 0) {
+            try {
+                const data = savedData ? JSON.parse(savedData) : null;
+                if ((data && data.players && data.players.length > 0) || gamesList.length > 0) {
+                    $('#load-game-btn').show();
+                }
+            } catch (e) {
+                if (gamesList.length > 0) {
+                    $('#load-game-btn').show();
+                }
+            }
+        }
 
         // Auto-load saved game if exists
         if (loadSavedGame() && GameState.players.length > 0) {
@@ -99,6 +116,56 @@
 
     function clearSavedGame() {
         localStorage.removeItem(STORAGE_KEY);
+    }
+
+    // Games List Management
+    function getSavedGamesList() {
+        const saved = localStorage.getItem(GAMES_LIST_KEY);
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
+    }
+
+    function saveGameToList(gameState, name) {
+        const gamesList = getSavedGamesList();
+        const gameEntry = {
+            id: Date.now().toString(),
+            name: name || `Game ${gamesList.length + 1}`,
+            date: new Date().toLocaleString(),
+            players: gameState.players.map(p => ({ name: p.name, balance: p.balance })),
+            smallBlind: gameState.smallBlind,
+            bigBlind: gameState.bigBlind,
+            state: JSON.stringify(gameState)
+        };
+        gamesList.unshift(gameEntry); // Add to beginning
+        localStorage.setItem(GAMES_LIST_KEY, JSON.stringify(gamesList));
+        return gameEntry;
+    }
+
+    function loadGameFromList(gameId) {
+        const gamesList = getSavedGamesList();
+        const game = gamesList.find(g => g.id === gameId);
+        if (game) {
+            try {
+                const state = JSON.parse(game.state);
+                Object.assign(GameState, state);
+                return true;
+            } catch (e) {
+                console.error('Failed to load game:', e);
+            }
+        }
+        return false;
+    }
+
+    function deleteGameFromList(gameId) {
+        const gamesList = getSavedGamesList();
+        const filtered = gamesList.filter(g => g.id !== gameId);
+        localStorage.setItem(GAMES_LIST_KEY, JSON.stringify(filtered));
     }
 
     // Screen Functions
@@ -683,13 +750,94 @@
 
     function hideSplitModal() { $('#split-modal').hide(); }
 
+    // Load Game Modal
+    function showLoadModal() {
+        const $list = $('#saved-games-list').empty();
+        const gamesList = getSavedGamesList();
+
+        // Also check for current game in progress
+        const currentSaved = localStorage.getItem(STORAGE_KEY);
+        if (currentSaved) {
+            try {
+                const data = JSON.parse(currentSaved);
+                if (data.players && data.players.length > 0) {
+                    gamesList.unshift({
+                        id: 'current',
+                        name: 'Current Game',
+                        date: 'In progress',
+                        players: data.players.map(p => ({ name: p.name, balance: p.balance })),
+                        smallBlind: data.smallBlind,
+                        bigBlind: data.bigBlind,
+                        isCurrent: true
+                    });
+                }
+            } catch (e) {}
+        }
+
+        if (gamesList.length === 0) {
+            $list.append('<div style="opacity: 0.7; padding: 15px;">No saved games found</div>');
+        } else {
+            gamesList.forEach(game => {
+                const $gameBtn = $('<button class="winner-btn">');
+                const playerNames = game.players.map(p => p.name).join(', ');
+                const playerInfo = game.players.length > 0 ? `${game.players.length} players` : 'No players';
+                $gameBtn.html(`
+                    <div style="font-weight: bold;">${game.name}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.8;">${game.date}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">${playerInfo} - SB: ${game.smallBlind} / BB: ${game.bigBlind}</div>
+                `);
+                $gameBtn.data('gameId', game.id);
+
+                const $btnContainer = $('<div style="display: flex; gap: 5px;">');
+                $btnContainer.append($gameBtn.on('click', function() {
+                    const gameId = $(this).data('gameId');
+                    if (gameId === 'current') {
+                        if (loadSavedGame() && GameState.players.length > 0) {
+                            hideLoadModal();
+                            showGameScreen();
+                            renderGameScreen();
+                        }
+                    } else {
+                        if (loadGameFromList(gameId)) {
+                            hideLoadModal();
+                            showGameScreen();
+                            renderGameScreen();
+                            saveGame(); // Save as current game
+                        }
+                    }
+                }));
+
+                // Delete button (not for current game)
+                if (!game.isCurrent) {
+                    const $deleteBtn = $('<button class="btn btn-tiny btn-decrease" style="padding: 8px 12px;">Delete</button>');
+                    $deleteBtn.on('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete "${game.name}"?`)) {
+                            deleteGameFromList(game.id);
+                            showLoadModal(); // Refresh list
+                        }
+                    });
+                    $btnContainer.append($deleteBtn);
+                }
+
+                $list.append($btnContainer);
+            });
+        }
+        $('#load-modal').show();
+    }
+
+    function hideLoadModal() { $('#load-modal').hide(); }
+
     // Event Listeners
     function setupEventListeners() {
         // Setup
         $('#start-game-btn').on('click', startGame);
+        $('#load-game-btn').on('click', showLoadModal);
+        $('#cancel-load-btn').on('click', hideLoadModal);
         $('#forget-all-btn').on('click', () => {
             if (confirm('Clear all saved data?')) {
                 clearSavedGame();
+                localStorage.removeItem(GAMES_LIST_KEY);
                 GameState.players = [];
                 location.reload();
             }
@@ -721,9 +869,37 @@
             }
         });
 
+        // Save game
+        $('#save-game-btn').on('click', () => {
+            if (GameState.players.length > 0) {
+                saveGame();
+                const playerNames = GameState.players.map(p => p.name).slice(0, 3).join(', ') + (GameState.players.length > 3 ? '...' : '');
+                const gameName = `${playerNames} - ${new Date().toLocaleDateString()}`;
+                saveGameToList(GameState, gameName);
+                $('#menu-dropdown').hide();
+                alert('Game saved!');
+            } else {
+                alert('No game to save.');
+            }
+        });
+
         // Guide
         $('#guide-btn').on('click', () => { $('#guide-modal').show(); $('#menu-dropdown').hide(); });
         $('#close-guide-btn').on('click', () => $('#guide-modal').hide());
+
+        // Save Game
+        $('#save-game-btn').on('click', () => {
+            if (GameState.players.length > 0) {
+                saveGame();
+                const playerNames = GameState.players.map(p => p.name).slice(0, 3).join(', ') + (GameState.players.length > 3 ? '...' : '');
+                const gameName = `${playerNames} - ${new Date().toLocaleDateString()}`;
+                saveGameToList(GameState, gameName);
+                alert('Game saved!');
+                $('#menu-dropdown').hide();
+            } else {
+                alert('No players in game.');
+            }
+        });
 
         // Game controls - use class selector for all control bars
         $(document).on('click', '.next-phase-btn', function() {
@@ -742,9 +918,17 @@
         });
         $('#end-game-btn').on('click', () => {
             if (confirm('End game and return to setup?')) {
+                // Save current game to the list before ending
+                if (GameState.players.length > 0) {
+                    const playerNames = GameState.players.map(p => p.name).slice(0, 3).join(', ') + (GameState.players.length > 3 ? '...' : '');
+                    const gameName = `${playerNames} - ${new Date().toLocaleDateString()}`;
+                    saveGameToList(GameState, gameName);
+                }
+                // Clear current game so it doesn't auto-load on refresh
                 clearSavedGame();
                 GameState.players = [];
                 showSetupScreen();
+                $('#load-game-btn').show();
             }
         });
 

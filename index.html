@@ -29,6 +29,7 @@
                 </div>
 
                 <button id="start-game-btn" class="btn btn-primary">Start New Game</button>
+                <button id="load-game-btn" class="btn btn-secondary" style="display: none;">Load Game</button>
                 <button id="forget-all-btn" class="btn btn-danger">Clear All Data</button>
             </div>
         </div>
@@ -37,6 +38,28 @@
         <div id="game-screen" class="screen" style="display: none;">
             <!-- Top Bar -->
             <div class="control-bar top-bar">
+                <div class="pot-display">
+                    <span class="label">POT</span>
+                    <span class="pot-amount">0</span>
+                </div>
+                <div class="phase-display">
+                    <span class="round-phase">Waiting</span>
+                </div>
+                <div class="blinds-display">
+                    <span class="current-blinds">SB: 0.5 / BB: 1</span>
+                    <div class="blinds-controls">
+                        <button class="btn btn-tiny btn-decrease decrease-blinds">-</button>
+                        <button class="btn btn-tiny increase-blinds">+</button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary next-phase-btn">Start Hand</button>
+                    <button class="btn btn-secondary end-hand-btn">End Hand</button>
+                </div>
+            </div>
+
+            <!-- Left Bar -->
+            <div class="control-bar left-bar">
                 <div class="pot-display">
                     <span class="label">POT</span>
                     <span class="pot-amount">0</span>
@@ -67,6 +90,28 @@
                 </div>
             </div>
 
+            <!-- Right Bar -->
+            <div class="control-bar right-bar">
+                <div class="pot-display">
+                    <span class="label">POT</span>
+                    <span class="pot-amount">0</span>
+                </div>
+                <div class="phase-display">
+                    <span class="round-phase">Waiting</span>
+                </div>
+                <div class="blinds-display">
+                    <span class="current-blinds">SB: 0.5 / BB: 1</span>
+                    <div class="blinds-controls">
+                        <button class="btn btn-tiny btn-decrease decrease-blinds">-</button>
+                        <button class="btn btn-tiny increase-blinds">+</button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary next-phase-btn">Start Hand</button>
+                    <button class="btn btn-secondary end-hand-btn">End Hand</button>
+                </div>
+            </div>
+
             <!-- Bottom Bar -->
             <div class="control-bar bottom-bar">
                 <div class="pot-display">
@@ -93,6 +138,7 @@
             <div class="menu-corner">
                 <button id="menu-btn" class="btn btn-menu">☰</button>
                 <div id="menu-dropdown" class="menu-dropdown" style="display: none;">
+                    <button id="save-game-btn">Save Game</button>
                     <button id="guide-btn">Guide</button>
                     <button id="end-game-btn">End Game</button>
                 </div>
@@ -191,6 +237,15 @@
                 <div id="split-list" class="winner-list"></div>
                 <button id="confirm-split-btn" class="btn btn-primary">Confirm Split</button>
                 <button id="cancel-split-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Load Game Modal -->
+        <div id="load-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Saved Games</h2>
+                <div id="saved-games-list" class="winner-list"></div>
+                <button id="cancel-load-btn" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>

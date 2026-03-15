@@ -107,6 +107,8 @@ h1 {
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    margin-top: 10px;
 }
 
 .btn-danger {
@@ -140,9 +142,11 @@ h1 {
 .btn-menu {
     padding: 10px 15px;
     font-size: 1.2rem;
-    background: rgba(0, 0, 0, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    color: white;
+    border: none;
     border-radius: 8px;
+    font-weight: 600;
 }
 
 /* Game Screen */
@@ -249,25 +253,42 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     z-index: 10;
-    width: fit-content;
+    width: 580px;
     max-width: 95vw;
 }
 
 .top-bar {
-    margin: 10px auto;
-    transform: rotate(180deg);
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .bottom-bar {
-    margin: 10px auto;
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-/* Left and Right bars - hidden for now */
-.left-bar,
-.right-bar,
-.left-container,
-.right-container {
-    display: none;
+/* Left bar - rotated 90deg, positioned at left edge */
+.left-bar {
+    position: fixed;
+    left: -260px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    width: 580px;
+    max-width: calc(100vh - 20px);
+}
+
+/* Right bar - rotated -90deg, positioned at right edge */
+.right-bar {
+    position: fixed;
+    right: -260px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    width: 580px;
+    max-width: calc(100vh - 20px);
 }
 
 .pot-display {

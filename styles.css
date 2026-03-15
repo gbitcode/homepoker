@@ -260,7 +260,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     z-index: 10;
-    width: 655px;
+    width: 740px;
     max-width: 95vw;
     position: relative;
 }
@@ -282,20 +282,20 @@ h1 {
 /* Left bar - rotated 90deg, positioned at left edge */
 .left-bar {
     position: fixed;
-    left: -286px;
+    left: -329px;
     top: 50%;
     transform: translateY(-50%) rotate(90deg);
-    width: 655px;
+    width: 740px;
     max-width: calc(100vh - 20px);
 }
 
 /* Right bar - rotated -90deg, positioned at right edge */
 .right-bar {
     position: fixed;
-    right: -286px;
+    right: -329px;
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);
-    width: 655px;
+    width: 740px;
     max-width: calc(100vh - 20px);
 }
 
@@ -451,7 +451,11 @@ h1 {
 }
 
 .player-card.out {
-    opacity: 0.3;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.player-card.out .btn-refill {
+    background: green;
 }
 
 .player-card.out .player-balance {
@@ -786,6 +790,42 @@ h1 {
 .winner-btn.selected {
     background: rgba(255, 215, 0, 0.3);
     border-color: #FFD700;
+}
+
+/* Winner Modal - Two Columns */
+.winner-modal-content {
+    display: flex;
+    gap: 20px;
+    max-width: 700px;
+    text-align: left;
+}
+
+.winner-left {
+    flex: 1;
+    min-width: 200px;
+}
+
+.winner-left h2 {
+    font-size: 1rem;
+    color: #FFD700;
+    margin-bottom: 10px;
+}
+
+.winner-right {
+    flex: 1;
+    min-width: 200px;
+}
+
+.winner-right h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.winner-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
 }
 
 /* Responsive */

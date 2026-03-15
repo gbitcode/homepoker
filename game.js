@@ -460,12 +460,31 @@ function rotateModal(btn) {
         }
     }
 
+    // Check if betting should be skipped (all players all-in or only one with money)
+    function shouldSkipToWinner() {
+        const nonFolded = GameState.players.filter(p => !p.folded);
+        if (nonFolded.length <= 1) return true;
+
+        // Count players who can still bet
+        const canAct = GameState.players.filter(p => !p.folded && !p.isAllIn && p.balance > 0);
+        return canAct.length <= 1;
+    }
+
     function nextPhase() {
         GameState.players.forEach(p => { p.currentBet = 0; p.hasActed = false; });
         GameState.currentBet = 0;
 
         const phases = ['pre-flop', 'flop', 'turn', 'river'];
         const idx = phases.indexOf(GameState.phase);
+
+        // If no one can bet anymore, skip to showdown
+        if (shouldSkipToWinner() && GameState.phase !== 'river') {
+            GameState.phase = 'river';
+            renderGameScreen();
+            saveGame();
+            showWinnerModal();
+            return;
+        }
 
         if (idx < phases.length - 1) {
             GameState.phase = phases[idx + 1];
@@ -672,63 +691,79 @@ function rotateModal(btn) {
                 // Action buttons for active player
                 if (isActive && player.balance > 0.001) {
                     const callAmount = GameState.currentBet - player.currentBet;
+                    const canCall = player.balance >= callAmount;
                     const bb = GameState.bigBlind;
 
                     const $actions = $('<div class="player-actions">');
 
                     // Fold and Check/Call on first row
                     const $row1 = $('<div class="action-row">');
-                    const callText = callAmount > 0.001 ? `Call<br>${formatNumber(callAmount)}` : 'Check';
                     $row1.append($('<button class="btn btn-danger">Fold</button>').on('click', fold));
-                    $row1.append($(`<button class="btn btn-success"></button>`).html(callText).on('click', callAmount > 0.001 ? call : check));
+
+                    if (callAmount > 0.001) {
+                        // There's a bet to call
+                        const callText = `Call<br>${formatNumber(callAmount)}`;
+                        const $callBtn = $(`<button class="btn btn-success"></button>`).html(callText);
+                        if (canCall) {
+                            $callBtn.on('click', call);
+                        } else {
+                            $callBtn.prop('disabled', true).css('opacity', '0.5');
+                        }
+                        $row1.append($callBtn);
+                    } else {
+                        // No bet - can check
+                        $row1.append($('<button class="btn btn-success">Check</button>').on('click', check));
+                    }
                     $actions.append($row1);
 
-                    // Raise section with colored background
-                    const $raiseSection = $('<div class="raise-section">');
-                    let raiseAmount = bb;
+                    // Raise section - only show if player can afford to call
+                    if (canCall) {
+                        const $raiseSection = $('<div class="raise-section">');
+                        let raiseAmount = bb;
 
-                    const $minusBtn = $('<button class="btn btn-minus">-</button>');
-                    const $raiseInput = $('<input type="number" class="raise-input" step="0.5" min="0">').val(formatNumber(raiseAmount));
-                    const $plusBtn = $('<button class="btn btn-plus">+</button>');
+                        const $minusBtn = $('<button class="btn btn-minus">-</button>');
+                        const $raiseInput = $('<input type="number" class="raise-input" step="0.5" min="0">').val(formatNumber(raiseAmount));
+                        const $plusBtn = $('<button class="btn btn-plus">+</button>');
 
-                    const updateInput = () => {
-                        $raiseInput.val(formatNumber(raiseAmount));
-                        $raiseBtn.prop('disabled', raiseAmount > player.balance);
-                    };
+                        const updateInput = () => {
+                            $raiseInput.val(formatNumber(raiseAmount));
+                            $raiseBtn.prop('disabled', raiseAmount > player.balance);
+                        };
 
-                    $raiseInput.on('input', () => {
-                        const val = parseFloat($raiseInput.val()) || 0;
-                        raiseAmount = Math.max(bb, Math.min(player.balance, val));
-                    });
+                        $raiseInput.on('input', () => {
+                            const val = parseFloat($raiseInput.val()) || 0;
+                            raiseAmount = Math.max(bb, Math.min(player.balance, val));
+                        });
 
-                    $minusBtn.on('click', () => {
-                        raiseAmount = Math.max(bb, raiseAmount - bb);
-                        updateInput();
-                    });
-                    $plusBtn.on('click', () => {
-                        raiseAmount = Math.min(player.balance, raiseAmount + bb);
-                        updateInput();
-                    });
+                        $minusBtn.on('click', () => {
+                            raiseAmount = Math.max(bb, raiseAmount - bb);
+                            updateInput();
+                        });
+                        $plusBtn.on('click', () => {
+                            raiseAmount = Math.min(player.balance, raiseAmount + bb);
+                            updateInput();
+                        });
 
-                    // Left side: buttons and input
-                    const $raiseLeft = $('<div class="raise-left">');
-                    const $btnRow = $('<div class="raise-btn-row">');
-                    $btnRow.append($minusBtn);
-                    $btnRow.append($plusBtn);
-                    $raiseLeft.append($btnRow);
+                        // Left side: buttons and input
+                        const $raiseLeft = $('<div class="raise-left">');
+                        const $btnRow = $('<div class="raise-btn-row">');
+                        $btnRow.append($minusBtn);
+                        $btnRow.append($plusBtn);
+                        $raiseLeft.append($btnRow);
 
-                    const $inputRow = $('<div class="raise-input-row">');
-                    $inputRow.append($raiseInput);
-                    $raiseLeft.append($inputRow);
-                    $raiseSection.append($raiseLeft);
+                        const $inputRow = $('<div class="raise-input-row">');
+                        $inputRow.append($raiseInput);
+                        $raiseLeft.append($inputRow);
+                        $raiseSection.append($raiseLeft);
 
-                    const $raiseBtn = $('<button class="btn btn-warning btn-raise">Raise</button>');
-                    $raiseBtn.on('click', () => {
-                        const val = parseFloat($raiseInput.val()) || 0;
-                        if (val > 0 && val <= player.balance) raise(val);
-                    });
-                    $raiseSection.append($raiseBtn);
-                    $actions.append($raiseSection);
+                        const $raiseBtn = $('<button class="btn btn-warning btn-raise">Raise</button>');
+                        $raiseBtn.on('click', () => {
+                            const val = parseFloat($raiseInput.val()) || 0;
+                            if (val > 0 && val <= player.balance) raise(val);
+                        });
+                        $raiseSection.append($raiseBtn);
+                        $actions.append($raiseSection);
+                    }
 
                     // All In on third row
                     const $row3 = $('<div class="action-row">');
@@ -843,6 +878,11 @@ function rotateModal(btn) {
         GameState.players.filter(p => !p.folded).forEach(p => {
             $list.append($('<button class="winner-btn">').text(`${p.name} (${formatNumber(p.balance)})`).data('player', p));
         });
+        // Get dealer's rotation
+        const dealer = GameState.players[GameState.dealerIndex];
+        const rotation = dealer ? (dealer.rotation || 0) : 0;
+        const content = document.querySelector('#winner-modal .modal-content');
+        content.style.transform = `rotate(${rotation}deg)`;
         $('#winner-modal').show();
     }
 
@@ -853,6 +893,11 @@ function rotateModal(btn) {
         GameState.players.filter(p => !p.folded).forEach(p => {
             $list.append($('<button class="winner-btn">').text(`${p.name} (${formatNumber(p.balance)})`).data('player', p).on('click', function() { $(this).toggleClass('selected'); }));
         });
+        // Get dealer's rotation
+        const dealer = GameState.players[GameState.dealerIndex];
+        const rotation = dealer ? (dealer.rotation || 0) : 0;
+        const content = document.querySelector('#split-modal .modal-content');
+        content.style.transform = `rotate(${rotation}deg)`;
         $('#split-modal').show();
     }
 

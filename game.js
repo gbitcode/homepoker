@@ -37,7 +37,8 @@ function rotateModal(btn) {
         isHandInProgress: false,
         minRaise: 0,
         lastRaiserIndex: -1,
-        pendingJoinSeat: null
+        pendingJoinSeat: null,
+        pendingAllInRotation: '0deg'
     };
 
     // Format number helper
@@ -419,6 +420,29 @@ function rotateModal(btn) {
         checkEndOfRound();
     }
 
+    function showAllInModal(playerRotation) {
+        const player = GameState.players[GameState.currentPlayerIndex];
+        // Calculate max potential loss from other players
+        const othersTotal = GameState.players
+            .filter(p => !p.folded && p.name !== player.name)
+            .reduce((sum, p) => sum + p.balance, 0);
+
+        // What player can win/lose from others (capped at their own balance)
+        const atRisk = Math.min(othersTotal, player.balance);
+
+        const riskEl = document.querySelector('#allin-risk strong');
+        riskEl.textContent = `${formatNumber(atRisk)}/${formatNumber(player.balance)}`;
+
+        const content = document.querySelector('#allin-modal .modal-content');
+        content.style.transform = `rotate(${playerRotation || 0}deg)`;
+
+        document.getElementById('allin-modal').style.display = 'flex';
+    }
+
+    function hideAllInModal() {
+        document.getElementById('allin-modal').style.display = 'none';
+    }
+
     function checkEndOfRound() {
         const nonFolded = GameState.players.filter(p => !p.folded);
         if (nonFolded.length === 1) { awardPot([nonFolded[0]]); return; }
@@ -708,7 +732,10 @@ function rotateModal(btn) {
 
                     // All In on third row
                     const $row3 = $('<div class="action-row">');
-                    $row3.append($('<button class="btn btn-allin btn-full">All In</button>').on('click', allIn));
+                    $row3.append($('<button class="btn btn-allin btn-full">All In</button>').on('click', () => {
+                        const currentRotation = player.rotation || 0;
+                        showAllInModal(currentRotation);
+                    }));
                     $actions.append($row3);
 
                     $card.append($actions);
@@ -1025,6 +1052,15 @@ function rotateModal(btn) {
 
         // Combinations
         $('#close-combinations-btn').on('click', () => $('#combinations-modal').hide());
+
+        // All In confirmation
+        $('#allin-confirm-btn').on('click', () => {
+            hideAllInModal();
+            allIn();
+        });
+        $('#allin-cancel-btn').on('click', () => {
+            hideAllInModal();
+        });
 
         // Game controls - use class selector for all control bars
         $(document).on('click', '.next-phase-btn', function() {

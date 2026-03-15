@@ -118,6 +118,13 @@ h1 {
     margin-top: 0px;
 }
 
+.btn-success {
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    color: white;
+    width: 100%;
+    margin-top: 0px;
+}
+
 .btn-tiny {
     padding: 4px 8px;
     font-size: 0.75rem;

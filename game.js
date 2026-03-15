@@ -656,11 +656,12 @@
                 }
                 $slot.append($empty);
             }
-            // Add to correct row: seats 0,1,2 to top row, seats 3,4,5 to bottom row
+            // Add to correct row: seats 0,1,2 to top row, seats 3,4,5 to bottom row (reversed for circular layout)
             if (seat < 3) {
                 $topRow.append($slot);
             } else {
-                $bottomRow.append($slot);
+                // Prepend to reverse order: 3,4,5 becomes 5,4,3 left-to-right
+                $bottomRow.prepend($slot);
             }
         }
     }

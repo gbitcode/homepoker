@@ -215,6 +215,29 @@ h1 {
     background: rgba(255, 255, 255, 0.4);
 }
 
+/* Balance bar (HP style) */
+.balance-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+}
+
+.balance-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* Color based on percentage */
+.balance-bar-fill.high { background: #4CAF50; }      /* 75-100% - green */
+.balance-bar-fill.medium { background: #FFC107; }    /* 40-74% - yellow/orange */
+.balance-bar-fill.low { background: #FF5722; }       /* 15-39% - orange */
+.balance-bar-fill.critical { background: #f44336; }  /* 0-14% - red */
+
 /* Control Bars - Base styles */
 .control-bar {
     background: rgba(0, 0, 0, 0.85);

@@ -434,6 +434,11 @@
             bbIndex = findNextPlayerWithBalance(sbIndex);
         }
 
+        // Find max balance for HP bar calculation
+        const maxBalance = GameState.players.length > 0
+            ? Math.max(...GameState.players.map(p => p.balance + (p.currentBet || 0)))
+            : 1;
+
         for (let seat = 0; seat < MAX_PLAYERS; seat++) {
             const player = GameState.players.find(p => p.seat === seat);
             const playerIndex = GameState.players.findIndex(p => p.seat === seat);
@@ -463,11 +468,24 @@
                 else if (player.folded) status = 'Folded';
                 else if (player.isAllIn) status = 'All In';
 
+                // Calculate balance percentage for HP bar
+                const totalBalance = player.balance + (player.currentBet || 0);
+                const balancePercent = maxBalance > 0 ? Math.round((totalBalance / maxBalance) * 100) : 0;
+
+                // Determine color class based on percentage
+                let balanceClass = 'critical';
+                if (balancePercent >= 75) balanceClass = 'high';
+                else if (balancePercent >= 40) balanceClass = 'medium';
+                else if (balancePercent >= 15) balanceClass = 'low';
+
                 // Initialize rotation if not set
                 if (player.rotation === undefined) player.rotation = 0;
 
                 $card.html(`
                     <button class="rotate-btn" title="Rotate">↻</button>
+                    <div class="balance-bar">
+                        <div class="balance-bar-fill ${balanceClass}" style="width: ${balancePercent}%"></div>
+                    </div>
                     <div class="badges-container">${badges}</div>
                     <div class="player-name">${player.name}</div>
                     <div class="player-balance">${formatNumber(player.balance)}</div>

@@ -293,7 +293,6 @@ function rotateModal(btn) {
             }
         });
 
-        GameState.dealerIndex = findNextPlayerWithBalance(GameState.dealerIndex);
         postBlinds();
         advanceToNextPlayer();
         renderGameScreen();
@@ -574,7 +573,7 @@ function rotateModal(btn) {
         });
 
         if (GameState.players.length > 0) {
-            GameState.dealerIndex = (GameState.dealerIndex + 1) % GameState.players.length;
+            GameState.dealerIndex = findNextPlayerWithBalance(GameState.dealerIndex);
         }
 
         renderGameScreen();

@@ -354,10 +354,19 @@ h1 {
 }
 
 /* Menu Corner - Right Bottom */
+/* Menu Corner - Right Bottom */
 .menu-corner {
     position: fixed;
     bottom: 10px;
     right: 10px;
+    z-index: 20;
+}
+
+/* Legend Corner - Left Bottom */
+.legend-corner {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
     z-index: 20;
 }
 

@@ -143,6 +143,11 @@
                     <button id="end-game-btn">End Game</button>
                 </div>
             </div>
+
+            <!-- Left Bottom Corner - Legend -->
+            <div class="legend-corner">
+                <button id="legend-btn" class="btn btn-menu">Legend</button>
+            </div>
         </div>
 
         <!-- Join Game Modal -->
@@ -240,12 +245,47 @@
             </div>
         </div>
 
-        <!-- Load Game Modal -->
-        <div id="load-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <h2>Saved Games</h2>
-                <div id="saved-games-list" class="winner-list"></div>
-                <button id="cancel-load-btn" class="btn btn-secondary">Cancel</button>
+        <!-- Legend Modal -->
+        <div id="legend-modal" class="modal" style="display: none;">
+            <div class="modal-content guide-content">
+                <h2>Legend</h2>
+                <div class="guide-section">
+                    <h3>Badges</h3>
+                    <ul>
+                        <li><strong>D</strong> - Dealer (deals the cards)</li>
+                        <li><strong>SB</strong> - Small Blind</li>
+                        <li><strong>BB</strong> - Big Blind</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>Game Phases</h3>
+                    <ul>
+                        <li><strong>Pre-flop</strong> - Before community cards</li>
+                        <li><strong>Flop</strong> - First 3 community cards</li>
+                        <li><strong>Turn</strong> - 4th community card</li>
+                        <li><strong>River</strong> - 5th community card</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>Actions</h3>
+                    <ul>
+                        <li><strong>Fold</strong> - Discard your hand</li>
+                        <li><strong>Check</strong> - Pass without betting</li>
+                        <li><strong>Call</strong> - Match the current bet</li>
+                        <li><strong>Raise</strong> - Increase the bet</li>
+                        <li><strong>All In</strong> - Bet all your chips</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>Balance Bar</h3>
+                    <ul>
+                        <li><span style="color: #4CAF50;">■</span> <strong>Green</strong> - 75-100% of leader</li>
+                        <li><span style="color: #FFC107;">■</span> <strong>Yellow</strong> - 40-74% of leader</li>
+                        <li><span style="color: #FF5722;">■</span> <strong>Orange</strong> - 15-39% of leader</li>
+                        <li><span style="color: #f44336;">■</span> <strong>Red</strong> - 0-14% of leader</li>
+                    </ul>
+                </div>
+                <button id="close-legend-btn" class="btn btn-primary">Got it!</button>
             </div>
         </div>
     </div>

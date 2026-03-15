@@ -888,6 +888,10 @@
         $('#guide-btn').on('click', () => { $('#guide-modal').show(); $('#menu-dropdown').hide(); });
         $('#close-guide-btn').on('click', () => $('#guide-modal').hide());
 
+        // Legend
+        $('#legend-btn').on('click', () => { $('#legend-modal').show(); });
+        $('#close-legend-btn').on('click', () => $('#legend-modal').hide());
+
         // Save Game
         $('#save-game-btn').on('click', () => {
             if (GameState.players.length > 0) {

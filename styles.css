@@ -261,7 +261,7 @@ h1 {
     position: fixed;
     top: 10px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(180deg);
 }
 
 .bottom-bar {
@@ -368,6 +368,63 @@ h1 {
     bottom: 10px;
     left: 10px;
     z-index: 20;
+}
+
+/* Combinations Corner - Top Left */
+.combinations-corner {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 20;
+}
+
+/* Fullscreen Corner - Top Right */
+.fullscreen-corner {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 20;
+}
+
+/* Hand Rankings Cards */
+.hand-rankings {
+    list-style: none;
+    padding-left: 0;
+}
+
+.hand-rankings li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.hand-cards {
+    font-size: 1.1rem;
+    min-width: 80px;
+}
+
+/* Combinations Modal */
+.combinations-modal {
+    max-width: 400px;
+}
+
+.hand-ranking {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.hand-name {
+    font-weight: bold;
+    min-width: 120px;
+    color: #FFD700;
+}
+
+.hand-example {
+    color: #ccc;
+    font-family: monospace;
 }
 
 .menu-dropdown {

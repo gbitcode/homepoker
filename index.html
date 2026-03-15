@@ -146,7 +146,17 @@
 
             <!-- Left Bottom Corner - Legend -->
             <div class="legend-corner">
-                <button id="legend-btn" class="btn btn-menu">Legend</button>
+                <button id="legend-btn" class="btn btn-menu">📋 Legend</button>
+            </div>
+
+            <!-- Left Top Corner - Combinations -->
+            <div class="combinations-corner">
+                <button id="combinations-btn" class="btn btn-menu">🃏 Combinations</button>
+            </div>
+
+            <!-- Right Top Corner - Fullscreen -->
+            <div class="fullscreen-corner">
+                <button id="fullscreen-btn" class="btn btn-menu">⛶</button>
             </div>
         </div>
 
@@ -286,6 +296,65 @@
                     </ul>
                 </div>
                 <button id="close-legend-btn" class="btn btn-primary">Got it!</button>
+            </div>
+        </div>
+
+        <!-- Combinations Modal -->
+        <div id="combinations-modal" class="modal" style="display: none;">
+            <div class="modal-content guide-content">
+                <h2>Poker Hand Rankings</h2>
+                <div class="hand-ranking">
+                    <div class="hand-name">Royal Flush</div>
+                    <div class="hand-example">A K Q J 10 (same suit)</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Straight Flush</div>
+                    <div class="hand-example">5 6 7 8 9 (same suit)</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Four of a Kind</div>
+                    <div class="hand-example">K K K K X</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Full House</div>
+                    <div class="hand-example">A A A 7 7</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Flush</div>
+                    <div class="hand-example">Any 5 cards (same suit)</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Straight</div>
+                    <div class="hand-example">4 5 6 7 8 (any suits)</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Three of a Kind</div>
+                    <div class="hand-example">Q Q Q X X</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">Two Pair</div>
+                    <div class="hand-example">J J 3 3 X</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">One Pair</div>
+                    <div class="hand-example">9 9 X X X</div>
+                </div>
+                <div class="hand-ranking">
+                    <div class="hand-name">High Card</div>
+                    <div class="hand-example">No matching cards</div>
+                </div>
+                <button id="close-combinations-btn" class="btn btn-primary">Got it!</button>
+            </div>
+        </div>
+
+        <!-- Load Game Modal -->
+        <div id="load-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Load Game</h2>
+                <div id="saved-games-list" class="winner-list"></div>
+                <div class="modal-buttons">
+                    <button id="cancel-load-btn" class="btn btn-secondary">Cancel</button>
+                </div>
             </div>
         </div>
     </div>

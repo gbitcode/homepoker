@@ -892,6 +892,21 @@
         $('#legend-btn').on('click', () => { $('#legend-modal').show(); });
         $('#close-legend-btn').on('click', () => $('#legend-modal').hide());
 
+        // Combinations
+        $('#combinations-btn').on('click', () => { $('#combinations-modal').show(); });
+        $('#close-combinations-btn').on('click', () => $('#combinations-modal').hide());
+
+        // Fullscreen
+        $('#fullscreen-btn').on('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
         // Save Game
         $('#save-game-btn').on('click', () => {
             if (GameState.players.length > 0) {
